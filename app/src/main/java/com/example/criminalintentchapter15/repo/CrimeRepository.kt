@@ -17,7 +17,6 @@ class CrimeRepository private constructor(
 ) {
     private val crimeDatabase = Room
         .databaseBuilder(context, CrimeDatabase::class.java, DATABASE_NAME)
-        .createFromAsset(DATABASE_NAME)
         .build()
 
     fun getCrimes() = crimeDatabase.crimeDao().getCrimes()
@@ -26,6 +25,10 @@ class CrimeRepository private constructor(
         coroutineScope.launch {
             crimeDatabase.crimeDao().updateCrime(crime)
         }
+    }
+
+    suspend fun addCrime(crime: Crime) {
+        crimeDatabase.crimeDao().addCrime(crime)
     }
 
     companion object {
