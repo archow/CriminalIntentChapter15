@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -33,8 +34,6 @@ class CrimeListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //instead of this, use menuHost
-//        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -48,9 +47,14 @@ class CrimeListFragment : Fragment() {
                 CrimeListFragmentDirections.showCrime(it)
             )
         }
-        binding.crimeRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = crimeListAdapter
+        binding.apply {
+            crimeRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = crimeListAdapter
+            }
+            addCrimeFab.setOnClickListener {
+                showNewCrime()
+            }
         }
         return binding.root
     }
@@ -61,9 +65,13 @@ class CrimeListFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 crimeListViewModel.crimes.collect {
                     crimeListAdapter.submitList(it)
+                    binding.emptyListView.visibility =
+                        if (it.isEmpty()) View.VISIBLE else View.GONE
                 }
             }
         }
+        //instead of this, use menuHost
+        //setHasOptionsMenu(true)
 
         //since createOptionsMenu has been deprecated as of September 2022,
         //use MenuHost instead, like so:
@@ -85,7 +93,14 @@ class CrimeListFragment : Fragment() {
             //here we also supply the lifecycle owner and the Lifecycle state where we
             //want the menu to be visible, and we supply these to the
             //addMenuProvider(...)
-            viewLifecycleOwner, Lifecycle.State.RESUMED)
+            viewLifecycleOwner, Lifecycle.State.STARTED)
+
+        //To access the fragment's appbar:
+        val appCompatActivity = activity as AppCompatActivity
+        val appBar = appCompatActivity.supportActionBar
+//        appBar?.let {
+//            it.title = "Example Title Instead"
+//        }
     }
 
     override fun onDestroyView() {

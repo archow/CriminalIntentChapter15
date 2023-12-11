@@ -25,6 +25,12 @@
         <argument
             android:name="crimeId"
             app:argType="java.util.UUID" />
+        <action
+            android:id="@+id/delete_crime"
+            app:destination="@id/crimeListFragment"
+            app:popUpTo="@id/crimeListFragment"
+            app:popUpToInclusive="true"
+            />
     </fragment>
     <dialog
         android:id="@+id/datePickerFragment"

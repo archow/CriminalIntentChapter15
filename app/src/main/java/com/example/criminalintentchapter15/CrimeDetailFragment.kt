@@ -2,8 +2,13 @@ package com.example.criminalintentchapter15
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -67,6 +72,32 @@ class CrimeDetailFragment : Fragment() {
                     crime?.let { updateUi(it) }
                 }
             }
+        }
+
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.fragment_crime_detail, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.delete_crime -> {
+                        deleteCrime()
+                        true
+                    }
+                    else -> true
+                }
+            }
+
+        }, viewLifecycleOwner, Lifecycle.State.STARTED)
+    }
+
+    private fun deleteCrime() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            crimeDetailViewModel.deleteCrime()
+            findNavController().navigate(
+                CrimeDetailFragmentDirections.deleteCrime()
+            )
         }
     }
 
